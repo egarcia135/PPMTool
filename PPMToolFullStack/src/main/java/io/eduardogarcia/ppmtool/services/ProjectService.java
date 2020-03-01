@@ -40,8 +40,9 @@ public class ProjectService {
             throw new ProjectIdException("Cannot delete project with ID '"+projectId+"'. Project not found.");
         }
         projectRepository.delete(project);
-
     }
+
+
 
 
 
