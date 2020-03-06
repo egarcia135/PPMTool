@@ -1,6 +1,7 @@
 package io.eduardogarcia.ppmtool.web;
 
 import io.eduardogarcia.ppmtool.domain.Project;
+import io.eduardogarcia.ppmtool.domain.ProjectTask;
 import io.eduardogarcia.ppmtool.services.MapValidationErrorService;
 import io.eduardogarcia.ppmtool.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,14 +48,17 @@ public class ProjectController {
 
     @GetMapping("/all")
     public Iterable<Project> getAllProjects() {
+
         return projectService.findAllProjects();
     }
+
     @DeleteMapping("/{projectId}")
     public ResponseEntity<?> deleteProject(@PathVariable String projectId){
         projectService.deleteProjectbyIdentifier(projectId);
 
         return new ResponseEntity<String>("Project with ID: '"+projectId+"' was deleted", HttpStatus.OK);
     }
+
 
 
 
