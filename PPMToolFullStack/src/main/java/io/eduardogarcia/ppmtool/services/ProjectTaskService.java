@@ -26,10 +26,15 @@ public class ProjectTaskService {
     @Autowired
     private ProjectRepository projectRepository;
 
-    public ProjectTask addProjectTask(String projectIdentifier, ProjectTask projectTask) {
+    @Autowired
+    private ProjectService projectService;
 
-        try {
-            Backlog backlog = backlogRepository.findByProjectIdentifier(projectIdentifier);
+    public ProjectTask addProjectTask(String projectIdentifier, ProjectTask projectTask, String username) {
+
+
+            Backlog backlog = projectService.findProjectByIdentifier(projectIdentifier, username).getBacklog();
+
+
             projectTask.setBacklog(backlog);
             Integer BacklogSequence = backlog.getPTSequence();
             BacklogSequence++;
@@ -43,21 +48,14 @@ public class ProjectTaskService {
                 projectTask.setStatus("To_Do");
             }
 
-            if (projectTask.getPriority()==0 || projectTask.getPriority() == null) {
+            if (projectTask.getPriority() == null || projectTask.getPriority() == 0) {
                 projectTask.setPriority(3);
             }
             return projectTaskRepository.save(projectTask);
-
-        } catch (Exception e) {
-            throw new ProjectNotFoundException("Project not found.");
-        }
     }
 
-    public Iterable<ProjectTask>findBacklogById(String id) {
-        Project project = projectRepository.findByProjectIdentifier(id);
-        if(project == null) {
-            throw new ProjectNotFoundException("Project with ID: '" +id+ "' does not exists.");
-        }
+    public Iterable<ProjectTask>findBacklogById(String id, String username) {
+        projectService.findProjectByIdentifier(id, username);
 
         return projectTaskRepository.findByProjectIdentifierOrderByPriority(id);
     }
@@ -72,10 +70,8 @@ public class ProjectTaskService {
         if(projectTask == null) {
             throw new ProjectNotFoundException("Project Task '" + pt_id +"' not found.");
         }
-
         if(!projectTask.getProjectIdentifier().equals(backlog_id)) {
             throw new ProjectNotFoundException("Project Task '" + pt_id + "' does not exist in project: '"+backlog_id);
-
         }
         return projectTask;
     }
